@@ -1,8 +1,8 @@
 const { GoogleGenAI } = require('@google/genai');
 
-// const GOOGLE_API_KEY = "AIzaSyCb5-cenL4BIOA7brwUKZ-3hZVeEGCaLBk"
-const GOOGLE_CLOUD_PROJECT = "healthcare-468915";
-const GOOGLE_CLOUD_LOCATION = "asia-southeast1";
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const GOOGLE_CLOUD_PROJECT = process.env.GOOGLE_CLOUD_PROJECT;
+const GOOGLE_CLOUD_LOCATION = process.env.GOOGLE_CLOUD_LOCATION;
 
 // let ocrText = `DEA# GB 05455616\n MEDICAL CENTRE\n824 14 Street\n New York, NY 91743, USA\n NAME John Smith\nADDRESS 162 Example St, NY\n
 //     R\n LIC #976269\nAGE\n 34\n DATE 09-11-12\n
@@ -18,7 +18,7 @@ const GOOGLE_CLOUD_LOCATION = "asia-southeast1";
 //     WTX-N-PRESC-1\n
 //     1-489-422-4700\n`
 
-async function generateContent(ocrText, projectId = GOOGLE_CLOUD_PROJECT, location = GOOGLE_CLOUD_LOCATION) {
+async function generateContent(ocrText, GOOGLE_API_KEY, GOOGLE_CLOUD_PROJECT, GOOGLE_CLOUD_LOCATION) {
 
     const prompt = `
         You are a medical NLP assistant.
@@ -43,8 +43,8 @@ async function generateContent(ocrText, projectId = GOOGLE_CLOUD_PROJECT, locati
 
     const ai = new GoogleGenAI({
         vertexai: true,
-        project: projectId,
-        location: location,
+        project: GOOGLE_CLOUD_PROJECT,
+        location: GOOGLE_CLOUD_LOCATION,
     });
     console.log('ai crd ok');
 
@@ -58,4 +58,4 @@ async function generateContent(ocrText, projectId = GOOGLE_CLOUD_PROJECT, locati
     return response.text;
 }
 
-generateContent(ocrText)
+module.exports = { generateContent };

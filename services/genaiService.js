@@ -1,29 +1,13 @@
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const GOOGLE_CLOUD_PROJECT = process.env.GOOGLE_CLOUD_PROJECT;
-const GOOGLE_CLOUD_LOCATION = process.env.GOOGLE_CLOUD_LOCATION;
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// let ocrText = `DEA# GB 05455616\n MEDICAL CENTRE\n824 14 Street\n New York, NY 91743, USA\n NAME John Smith\nADDRESS 162 Example St, NY\n
-//     R\n LIC #976269\nAGE\n 34\n DATE 09-11-12\n
-//     Betaloc 100ng-tab BID\n
-//     Dorzolamidum 10\n
-//     Cimetidine 50 mg - 2 tabs TID\n
-//     mg-1 tab BID\n
-//     Oxprelol 50mg-1 tab QD\n
-//     OLABEL\n
-//     REFILL 012345 PRN\n
-//     Dr. Steve Johnson\n
-//     signature\n
-//     WTX-N-PRESC-1\n
-//     1-489-422-4700\n`
-
-async function generateContent(ocrText, GOOGLE_API_KEY, GOOGLE_CLOUD_PROJECT, GOOGLE_CLOUD_LOCATION) {
+async function generateContent(ocrText = null) {
 
     const prompt = `
         You are a medical NLP assistant.
         Extract all relevant structured medical information from the following OCR prescription text.
-        Return the result in JSON format with these fields:
+        Return the result in pure JSON format with these fields :
  
         - patient (name, age, address)
         - prescriber (doctor name, license number, DEA number, phone)
@@ -41,21 +25,13 @@ async function generateContent(ocrText, GOOGLE_API_KEY, GOOGLE_CLOUD_PROJECT, GO
         This is the OCR prescription text:
         ${ocrText}`;
 
-    const ai = new GoogleGenAI({
-        vertexai: true,
-        project: GOOGLE_CLOUD_PROJECT,
-        location: GOOGLE_CLOUD_LOCATION,
-    });
-    console.log('ai crd ok');
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-    });
+    const result = await model.generateContent(prompt);
 
-    console.log(response.text)
+    console.log(result.response.text());
 
-    return response.text;
+    return result.response.text();
 }
 
 module.exports = { generateContent };
